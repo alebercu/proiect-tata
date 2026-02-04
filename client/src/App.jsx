@@ -24,6 +24,7 @@ function App() {
           {/* Dreapta: Info */}
           <div className="w-full md:w-2/3">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">Ioan Bercu</h1>
+            <p className="text-xl text-blue-600 font-medium mb-4">Evaluator & Artist</p>
             
             <div className="flex flex-wrap items-center gap-2 text-stone-600 mb-6">
               <p className="font-semibold uppercase tracking-wide">Președinte ANEVAR</p>
