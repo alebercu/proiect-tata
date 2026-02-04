@@ -26,10 +26,27 @@ function App() {
           <div className="w-full md:w-2/3">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">Ioan Bercu</h1>
             <p className="text-xl text-blue-600 font-medium mb-6">Evaluator & Artist</p>
+
+            <div className="flex flex-col mb-8 border-b pb-6">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+      <p className="text-xl text-stone-600 font-semibold uppercase tracking-wide">
+        Președinte ANEVAR
+      </p>
+      <span className="hidden sm:block text-stone-300">|</span>
+      <a 
+        href="https://neoconsult.ro/" // Înlocuiește cu link-ul corect dacă e altul
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xl text-blue-800 font-semibold uppercase tracking-wide hover:underline"
+      >
+        Director General Neoconsult Valuation
+      </a>
+    </div>
+  </div>
             
             <p className="text-gray-600 leading-relaxed mb-8 text-lg">
               {/* Aici vei scrie descrierea făcută de tine */}
-              "Sunt om de afaceri și Președinte al asociației ANEVAR, o activitate care necesită rigoare, precizie și o înțelegere profundă a cifrelor. Cu toate acestea, am găsit mereu un echilibru în pictură. Pentru mine, pânza este spațiul unde regulile pieței dispar și las locul creativității pure. Acest site este modul meu de a împărtăși cele două lumi care mă definesc: profesionalismul din mediul asociativ și libertatea culorilor."
+              "Sunt evaluator și Președinte al asociației ANEVAR, o activitate care necesită rigoare, precizie și o înțelegere profundă a cifrelor. Cu toate acestea, am găsit mereu un echilibru în pictură. Pentru mine, pânza este spațiul unde regulile pieței dispar și las locul creativității pure. Acest site este modul meu de a împărtăși cele două lumi care mă definesc: profesionalismul din mediul asociativ și libertatea culorilor."
             </p>
 
             <div className="mt-10 flex gap-8">
