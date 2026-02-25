@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Gallery from './pages/Gallery';
+import AdminUpload from './pages/AdminUpload';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/galerie" element={<Gallery />} />
+          <Route path="/admin-panou-control" element={<AdminUpload />} />
         </Routes>
       </div>
     </Router>

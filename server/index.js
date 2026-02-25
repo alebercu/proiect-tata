@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const cloudinary = require('cloudinary').v2;
+
 const upload = require('./cloudinaryConfig');
 const Painting = require('./models/Painting');
 
@@ -47,6 +49,50 @@ app.post('/api/paintings', upload.single('image'), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Eroare la încărcarea picturii" });
+  }
+});
+
+// Ruta pentru Editare (Update)
+app.post('/api/paintings/update/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { title, price, available } = req.body;
+    const updateData = { title, price, available: available === 'true' || available === true };
+
+    // Dacă utilizatorul a încărcat o imagine NOUĂ
+    if (req.file) {
+      const oldPainting = await Painting.findById(req.params.id);
+      // Ștergem poza veche din Cloudinary
+      if (oldPainting.publicId) {
+        await cloudinary.uploader.destroy(oldPainting.publicId);
+      }
+      updateData.imageUrl = req.file.path;
+      updateData.publicId = req.file.filename;
+    }
+
+    const updatedPainting = await Painting.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.json(updatedPainting);
+  } catch (error) {
+    res.status(500).json({ message: "Eroare la actualizare" });
+  }
+});
+
+app.delete('/api/paintings/:id', async (req, res) => {
+  try {
+    const painting = await Painting.findById(req.params.id);
+    if (!painting) return res.status(404).json({ message: "Pictura nu a fost găsită" });
+
+    // 1. Ștergem imaginea din Cloudinary folosind publicId
+    if (painting.publicId) {
+      await cloudinary.uploader.destroy(painting.publicId);
+    }
+
+    // 2. Ștergem documentul din MongoDB
+    await Painting.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Pictura a fost ștearsă cu succes!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Eroare la ștergere" });
   }
 });
 

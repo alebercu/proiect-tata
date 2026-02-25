@@ -33,7 +33,7 @@ export default function Gallery() {
         </header>
 
         {/* Grila de imagini (Folosim paintings în loc de PICTURI_MOCK) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           {paintings.map((pictura, index) => (
             <motion.div
               key={pictura._id} // MongoDB folosește _id
@@ -41,7 +41,7 @@ export default function Gallery() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }} 
-              className="relative"
+              className="break-inside-avoid mb-8"
             >
               <motion.div
                 layoutId={`card-${pictura._id}`}
@@ -49,13 +49,14 @@ export default function Gallery() {
                 className="cursor-pointer group relative overflow-hidden rounded-xl bg-white shadow-md"
                 whileHover={{ y: -5 }}
               >
-                <div className="aspect-[4/5] overflow-hidden">
-                  <img 
-                    src={pictura.imageUrl} // imageUrl din baza de date
-                    alt={pictura.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+                <div className="relative overflow-hidden bg-stone-200">
+  <img 
+    src={pictura.imageUrl} 
+    alt={pictura.title} 
+    className="w-full h-auto block object-contain transition-transform duration-500 group-hover:scale-105"
+    style={{ maxHeight: '500px' }} // Limităm înălțimea ca să nu ocupe tot ecranul dacă e foarte lungă
+  />
+</div>
                 
                 {/* Overlay la hover (Numele) */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
