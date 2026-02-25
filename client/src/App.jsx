@@ -1,13 +1,21 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Gallery from './pages/Gallery';
+import Login from './pages/Login';
 import AdminUpload from './pages/AdminUpload';
+
+// 1. Logica de protecție (mutată aici pentru claritate)
+const ProtectedRoute = ({ children }) => {
+  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  return isAdmin ? children : <Navigate to="/admin-login" replace />;
+};
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        {/* Navbar-ul care va apărea pe TOATE paginile */}
+        {/* Navbar-ul */}
         <nav className="bg-white shadow-sm border-b py-4 px-6 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto flex justify-between items-center">
             <Link to="/" className="text-xl font-bold text-gray-800 tracking-tighter uppercase">
@@ -20,11 +28,24 @@ function App() {
           </div>
         </nav>
 
-        {/* Locul unde se schimbă conținutul paginilor */}
+        {/* Rutele site-ului */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/galerie" element={<Gallery />} />
-          <Route path="/admin-panou-control" element={<AdminUpload />} />
+          <Route path="/admin-login" element={<Login />} />
+
+          {/* Ruta PROTEJATĂ */}
+          <Route 
+            path="/admin-panou-control" 
+            element={
+              <ProtectedRoute>
+                <AdminUpload />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Redirect automat dacă adresa e greșită */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>
