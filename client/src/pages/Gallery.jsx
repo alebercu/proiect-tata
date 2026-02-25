@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Am adăugat useEffect
 import { motion, AnimatePresence } from 'framer-motion';
-
-const PICTURI_MOCK = [
-  { id: 1, titlu: "Amurg în Maramureș", pret: "1200 RON", imagine: "https://via.placeholder.com/600x800" },
-  { id: 2, titlu: "Rigoare și Haos", pret: "1500 RON", imagine: "https://via.placeholder.com/600x800" },
-  { id: 3, titlu: "Structuri Urbane", pret: "900 RON", imagine: "https://via.placeholder.com/600x800" },
-  { id: 4, titlu: "Liniștea de după cifre", pret: "2000 RON", imagine: "https://via.placeholder.com/600x800" },
-];
+import axios from 'axios'; // Asigură-te că ai dat npm install axios în client
 
 export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [paintings, setPaintings] = useState([]); // Aici vom ține picturile din baza de date
+  const [loading, setLoading] = useState(true);
+
+  // Funcția care aduce picturile de la server
+  useEffect(() => {
+    const fetchPaintings = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/paintings');
+        setPaintings(response.data);
+      } catch (err) {
+        console.error("Eroare la încărcarea picturilor:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPaintings();
+  }, []);
+
+  if (loading) return <div className="text-center py-20">Se încarcă galeria...</div>;
 
   return (
     <div className="min-h-screen bg-stone-50 py-16 px-6">
@@ -19,44 +32,43 @@ export default function Gallery() {
           <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
         </header>
 
-        {/* Grila de imagini (fără prețuri la vedere) */}
+        {/* Grila de imagini (Folosim paintings în loc de PICTURI_MOCK) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PICTURI_MOCK.map((pictura, index) => (
-  <motion.div
-    key={pictura.id}
-    // REINTRODUCEM CURGEREA AICI
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay: index * 0.1 }} 
-    className="relative"
-  >
-    <motion.div
-      layoutId={`card-${pictura.id}`} // MĂRIREA RĂMÂNE PE ELEMENTUL INTERIOR
-      onClick={() => setSelectedImage(pictura)}
-      className="cursor-pointer group relative overflow-hidden rounded-xl bg-white shadow-md"
-      whileHover={{ y: -5 }}
-    >
-      <div className="aspect-[4/5] overflow-hidden">
-        <img 
-          src={pictura.imagine} 
-          alt={pictura.titlu} 
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-      
-      {/* Overlay la hover */}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
-        <p className="text-white font-medium text-lg text-center leading-tight">
-          {pictura.titlu}
-        </p>
-      </div>
-    </motion.div>
-  </motion.div>
-))}
+          {paintings.map((pictura, index) => (
+            <motion.div
+              key={pictura._id} // MongoDB folosește _id
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }} 
+              className="relative"
+            >
+              <motion.div
+                layoutId={`card-${pictura._id}`}
+                onClick={() => setSelectedImage(pictura)}
+                className="cursor-pointer group relative overflow-hidden rounded-xl bg-white shadow-md"
+                whileHover={{ y: -5 }}
+              >
+                <div className="aspect-[4/5] overflow-hidden">
+                  <img 
+                    src={pictura.imageUrl} // imageUrl din baza de date
+                    alt={pictura.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                
+                {/* Overlay la hover (Numele) */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                  <p className="text-white font-medium text-lg text-center leading-tight">
+                    {pictura.title}
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Fereastra Modală (Overlay-ul care apare la click) */}
+        {/* Fereastra Modală (Aici apare și disponibilitatea) */}
         <AnimatePresence>
           {selectedImage && (
             <motion.div 
@@ -67,26 +79,39 @@ export default function Gallery() {
               className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 md:p-10"
             >
               <motion.div 
-                layoutId={`card-${selectedImage.id}`}
+                layoutId={`card-${selectedImage._id}`}
                 className="bg-white rounded-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row"
-                onClick={(e) => e.stopPropagation()} // Împiedică închiderea când dai click pe card
+                onClick={(e) => e.stopPropagation()}
               >
-                {/* Imaginea mare */}
                 <div className="md:w-2/3 bg-stone-200">
                   <img 
-                    src={selectedImage.imagine} 
-                    alt={selectedImage.titlu} 
+                    src={selectedImage.imageUrl} 
+                    alt={selectedImage.title} 
                     className="w-full h-full object-contain max-h-[70vh] md:max-h-none"
                   />
                 </div>
 
-                {/* Detalii în Modal */}
                 <div className="md:w-1/3 p-8 flex flex-col justify-center">
                   <h2 className="text-3xl font-serif font-bold text-stone-800 mb-2">
-                    {selectedImage.titlu}
+                    {selectedImage.title}
                   </h2>
                   <div className="w-12 h-1 bg-blue-600 mb-6"></div>
-                  <p className="text-2xl font-mono text-blue-600 mb-8">{selectedImage.pret}</p>
+                  
+                  {/* PREȚUL */}
+                  <p className="text-2xl font-mono text-blue-600 mb-2">{selectedImage.price}</p>
+                  
+                  {/* DISPONIBILITATEA (Noutatea) */}
+                  <div className="mb-8">
+                    {selectedImage.available ? (
+                      <span className="text-sm font-bold text-green-600 uppercase tracking-widest flex items-center gap-1">
+                        ● Disponibil
+                      </span>
+                    ) : (
+                      <span className="text-sm font-bold text-red-500 uppercase tracking-widest flex items-center gap-1">
+                        ○ Vândut
+                      </span>
+                    )}
+                  </div>
                   
                   <button 
                     onClick={() => setSelectedImage(null)}
