@@ -72,58 +72,61 @@ export default function Gallery() {
         {/* Fereastra Modală (Aici apare și disponibilitatea) */}
         <AnimatePresence>
           {selectedImage && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedImage(null)}
-              className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 md:p-10"
-            >
-              <motion.div 
-                layoutId={`card-${selectedImage._id}`}
-                className="bg-white rounded-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="md:w-2/3 bg-stone-200">
-                  <img 
-                    src={selectedImage.imageUrl} 
-                    alt={selectedImage.title} 
-                    className="w-full h-full object-contain max-h-[70vh] md:max-h-none"
-                  />
-                </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setSelectedImage(null)}
+      className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-2 md:p-6"
+    >
+      <motion.div 
+        layoutId={`card-${selectedImage._id}`}
+        className="bg-white rounded-2xl overflow-hidden max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Partea cu IMAGINEA - O facem flexibilă */}
+        <div className="flex-1 bg-stone-100 flex items-center justify-center overflow-hidden p-2">
+          <img 
+            src={selectedImage.imageUrl} 
+            alt={selectedImage.title} 
+            className="w-full h-full object-contain" 
+            /* object-contain se asigură că poza stă întreagă în spațiul ei fără crop */
+          />
+        </div>
 
-                <div className="md:w-1/3 p-8 flex flex-col justify-center">
-                  <h2 className="text-3xl font-serif font-bold text-stone-800 mb-2">
-                    {selectedImage.title}
-                  </h2>
-                  <div className="w-12 h-1 bg-blue-600 mb-6"></div>
-                  
-                  {/* PREȚUL */}
-                  <p className="text-2xl font-mono text-blue-600 mb-2">{selectedImage.price}</p>
-                  
-                  {/* DISPONIBILITATEA (Noutatea) */}
-                  <div className="mb-8">
-                    {selectedImage.available ? (
-                      <span className="text-sm font-bold text-green-600 uppercase tracking-widest flex items-center gap-1">
-                        ● Disponibil
-                      </span>
-                    ) : (
-                      <span className="text-sm font-bold text-red-500 uppercase tracking-widest flex items-center gap-1">
-                        ○ Vândut
-                      </span>
-                    )}
-                  </div>
-                  
-                  <button 
-                    onClick={() => setSelectedImage(null)}
-                    className="mt-auto bg-stone-800 text-white py-3 rounded-lg hover:bg-stone-700 transition"
-                  >
-                    Închide
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
+        {/* Partea cu DETALIILE - O facem să stea fixă în dreapta (sau jos pe mobil) */}
+        <div className="w-full md:w-80 p-8 flex flex-col bg-white border-t md:border-t-0 md:border-l border-stone-100">
+          <h2 className="text-2xl font-serif font-bold text-stone-800 mb-2 leading-tight">
+            {selectedImage.title}
+          </h2>
+          <div className="w-10 h-1 bg-blue-600 mb-6"></div>
+          
+          <div className="space-y-4 mb-8">
+            <p className="text-xl font-mono text-blue-600">{selectedImage.price}</p>
+            
+            <div>
+              {selectedImage.available ? (
+                <span className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-widest border border-green-100">
+                  ● Disponibil
+                </span>
+              ) : (
+                <span className="px-3 py-1 rounded-full bg-red-50 text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-100">
+                  ○ Vândut
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="mt-auto w-full bg-stone-800 text-white py-3 rounded-xl font-medium hover:bg-stone-700 transition-colors"
+          >
+            Închide
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
         </AnimatePresence>
       </div>
     </div>

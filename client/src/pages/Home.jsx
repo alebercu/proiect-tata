@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import pozaTata from '../assets/poza-tata.jpeg';
 import { FaLinkedin, FaFacebook, FaPhoneAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
+import axios from 'axios';
+
 function Home() {
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/articles')
+      .then(res => setArticles(res.data))
+      .catch(err => console.log(err));
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <main className="max-w-6xl mx-auto px-6 py-12">
@@ -86,7 +95,7 @@ function Home() {
                 href="tel:+407xxxxxxxx" 
                 className="flex items-center gap-2 text-stone-500 hover:text-green-700 transition-colors text-sm font-medium tracking-wide"
               >
-                <FaPhoneAlt className="text-xs" /> CONTACT DIRECT: +40 7xx xxx xxx
+                <FaPhoneAlt className="text-xs" /> CONTACT DIRECT: +40 786 130 640
               </a>
             </div>
           </motion.div>
@@ -101,22 +110,18 @@ function Home() {
   className="border-t pt-12"
 >
           <h2 className="text-2xl font-bold text-gray-800 mb-8 uppercase tracking-tighter">Apariții în presă</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="https://www.directmm.ro/comunitate/ioan-bercu-cand-excelenta-profesionala-se-impleteste-cu-vibratia-artei/" 
-               target="_blank" rel="noopener noreferrer"
-               className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-              <span className="text-sm text-gray-400">Octombrie 2025</span>
-              <h3 className="text-xl font-semibold mt-2 text-gray-800">Când excelența profesională se împletește cu vibrația artei</h3>
-              <p className="text-blue-500 mt-2 text-sm font-medium">Citește articolul →</p>
-            </a>
-            
-            <a href="https://www.directmm.ro/cultura/marian-baroian-si-ioan-bercu-doi-oameni-un-vis-comun/" 
-               target="_blank" rel="noopener noreferrer"
-               className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-              <span className="text-sm text-gray-400">Octombrie 2025</span>
-              <h3 className="text-xl font-semibold mt-2 text-gray-800">Marian Baroian și Ioan Bercu – doi oameni, un vis comun</h3>
-              <p className="text-blue-500 mt-2 text-sm font-medium">Citește articolul →</p>
-            </a>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {articles.map((art) => 
+        (
+          <a key={art._id} href={art.link} target="_blank" rel="noopener noreferrer"
+             className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
+            <span className="text-sm text-gray-400">{art.date}</span>
+            <h3 className="text-xl font-semibold mt-2 text-gray-800">{art.title}</h3>
+            <p className="text-blue-500 mt-2 text-sm font-medium">Citește articolul →</p>
+          </a>
+        ))}
+        {articles.length === 0 && <p className="text-stone-400 italic">Nu există articole momentan.</p>}
+      
           </div>
         </motion.section>
       </main>

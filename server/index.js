@@ -4,6 +4,7 @@ const cloudinary = require('cloudinary').v2;
 
 const upload = require('./cloudinaryConfig');
 const Painting = require('./models/Painting');
+const Article = require('./models/Article');
 
 
 const express = require('express');
@@ -92,6 +93,39 @@ app.delete('/api/paintings/:id', async (req, res) => {
     res.json({ message: "Pictura a fost ștearsă cu succes!" });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Eroare la ștergere" });
+  }
+});
+
+// --- RUTE ARTICOLE ---
+
+// Ia toate articolele
+app.get('/api/articles', async (req, res) => {
+  try {
+    const articles = await Article.find().sort({ createdAt: -1 });
+    res.json(articles);
+  } catch (err) {
+    res.status(500).json({ message: "Eroare la preluarea articolelor" });
+  }
+});
+
+// Adaugă articol nou
+app.post('/api/articles', async (req, res) => {
+  try {
+    const newArticle = new Article(req.body);
+    await newArticle.save();
+    res.status(201).json(newArticle);
+  } catch (err) {
+    res.status(500).json({ message: "Eroare la salvare" });
+  }
+});
+
+// Șterge articol
+app.delete('/api/articles/:id', async (req, res) => {
+  try {
+    await Article.findByIdAndDelete(req.params.id);
+    res.json({ message: "Articol șters" });
+  } catch (err) {
     res.status(500).json({ message: "Eroare la ștergere" });
   }
 });

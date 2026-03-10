@@ -10,6 +10,10 @@ export default function AdminUpload() {
   const [loading, setLoading] = useState(false);
   const [paintings, setPaintings] = useState([]);
   const [editingId, setEditingId] = useState(null); // ID-ul picturii pe care o edităm
+  const [artTitle, setArtTitle] = useState('');
+const [artLink, setArtLink] = useState('');
+const [artDate, setArtDate] = useState('');
+const [articles, setArticles] = useState([]);
 
   const fetchPaintings = async () => {
     const res = await axios.get('http://localhost:5001/api/paintings');
@@ -65,6 +69,37 @@ export default function AdminUpload() {
     }
   };
 
+  const fetchArticles = async () => {
+  const res = await axios.get('http://localhost:5001/api/articles');
+  setArticles(res.data);
+};
+
+useEffect(() => {
+  fetchPaintings();
+  fetchArticles(); // Încarcă și articolele la start
+}, []);
+
+const handleArticleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await axios.post('http://localhost:5001/api/articles', {
+      title: artTitle,
+      link: artLink,
+      date: artDate
+    });
+    setArtTitle(''); setArtLink(''); setArtDate('');
+    fetchArticles();
+    alert("Articol adăugat!");
+  } catch (err) { alert("Eroare!"); }
+};
+
+const deleteArticle = async (id) => {
+  if(window.confirm("Ștergi articolul?")) {
+    await axios.delete(`http://localhost:5001/api/articles/${id}`);
+    fetchArticles();
+  }
+};
+
   return (
     <div className="min-h-screen bg-stone-100 py-12 px-6">
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -117,6 +152,38 @@ export default function AdminUpload() {
           </div>
         </div>
       </div>
+      <div className="mt-12 pt-12 border-t border-stone-300">
+  <h2 className="text-2xl font-bold mb-6">Gestionare Articole Presă</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {/* Formular Articol */}
+    <form onSubmit={handleArticleSubmit} className="space-y-4 bg-white p-6 rounded-2xl shadow">
+      <input type="text" placeholder="Titlu Articol" value={artTitle} onChange={e => setArtTitle(e.target.value)} className="w-full p-3 border rounded-xl" required />
+      <input type="text" placeholder="Link Articol" value={artLink} onChange={e => setArtLink(e.target.value)} className="w-full p-3 border rounded-xl" required />
+      <input type="text" placeholder="Data (ex: Octombrie 2025)" value={artDate} onChange={e => setArtDate(e.target.value)} className="w-full p-3 border rounded-xl" required />
+      <button className="w-full bg-stone-800 text-white py-3 rounded-xl">Adaugă Articol</button>
+      <p className="text-[10px] text-stone-400 mt-1 italic">
+  * Asigură-te că link-ul conține "https://" la început.
+</p>
+    </form>
+
+    {/* Listă Articole */}
+    <div className="space-y-3">
+      {articles.map(art => (
+        <div key={art._id} className="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+          <div>
+            <p className="font-bold text-sm">{art.title}</p>
+            <p className="text-xs text-stone-400">{art.date}</p>
+          </div>
+          <button onClick={() => deleteArticle(art._id)} className="text-red-500 font-bold">X</button>
+        </div>
+      ))}
     </div>
+  </div>
+</div>
+    </div>
+
+    
   );
+
+  
 }
